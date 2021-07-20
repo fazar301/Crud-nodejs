@@ -10,7 +10,9 @@
         </div>
       <% }else{ %>
         <div class="card" style="width: 18rem;">
-          <img src="data:image/image/gif;base64,<%= contact.img.data.toString('base64') %> " class="card-img-top">
+          <% if(typeof contact.img.data !== 'undefined'){ %> 
+            <img src="data:image/image/gif;base64,<%= contact.img.data.toString('base64') %> " class="card-img-top">
+          <% } %> 
             <div class="card-body">
               <h5 class="card-title"><%= contact.nama %></h5>
               <h6 class="card-subtitle mb-2 text-muted"><%= contact.noHP %></h6>
