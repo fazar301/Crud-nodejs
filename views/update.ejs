@@ -11,7 +11,7 @@
                     </ul>
                 </div>
             <% } %>
-            <form method="POST" action="?_method=PUT">
+            <form method="POST" action="?_method=PUT" enctype="multipart/form-data">
                 <input type="hidden" name="_method" value="PUT">
                 <div class="mb-3">
                     <label for="nama" class="form-label"></label>
@@ -24,6 +24,10 @@
                 <div class="mb-3">
                 <label for="email" class="form-label">Email address</label>
                 <input type="email" class="form-control" id="email" name="email" value="<% if(typeof data !== 'undefined'){ %><%= data.email %><% } %>">
+                </div>
+                <div class="mb-3">
+                    <label for="image" class="form-label">Image</label>
+                    <input type="file" class="form-control" id="image" name="image">
                 </div>
                 <a href="/contact" class="btn btn-primary me-3">Back</a><button type="submit" class="btn btn-primary">Submit</button>
             </form>
