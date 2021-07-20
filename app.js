@@ -1,5 +1,5 @@
-const {MongoClient, ObjectId} = require('mongodb')
 const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId
 const { body, validationResult } = require('express-validator');
 const { check } = require('express-validator');
 const methodOverride = require('method-override');
@@ -13,7 +13,7 @@ const fs = require('fs')
 const path = require('path')
 const multer = require('multer')
 // Image
-mongoose.connect('mongodb+srv://Fajar:fajar1234@cluster0.sx4ff.mongodb.net/test?retryWrites=true&w=majority',{
+mongoose.connect('mongodb+srv://Fajar:fajar1234@cluster0.sx4ff.mongodb.net/contact?retryWrites=true&w=majority',{
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true
@@ -76,22 +76,26 @@ app.post('/contact/add',upload.single('image'),check('noHP','Nomor Hp tidak vali
         console.log(errors.array())
         return res.render('tambah',{title: 'Halaman Tambah',errors: errors.array(),data: req.body})
     }
-    const contact = {
-        nama: req.body.nama,
-        noHP: req.body.noHP,
-        email: req.body.email,
-        img: {
-            data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename))
+    if(!req.file){
+        await new Contact(req.body).save()
+    }else{
+        const contact = {
+            nama: req.body.nama,
+            noHP: req.body.noHP,
+            email: req.body.email,
+            img: {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename))
+            }
         }
+        await new Contact(contact).save()
     }
-    await new Contact(contact).save()
     req.flash('msg','Data contact berhasil ditambahkan!')
     res.redirect('/contact')
 
 })
 // Akhir Route Tambah
 // Route Update
-app.put('/contact/update/:id',check('noHP','Nomor Hp tidak valid!').isMobilePhone('id-ID'),async (req,res) => {
+app.put('/contact/update/:id',upload.single('image'),check('noHP','Nomor Hp tidak valid!').isMobilePhone('id-ID'),async (req,res) => {
     if(req.body.email){
         await body('email').isEmail().withMessage('Email tidak valid!').run(req)
     }
@@ -100,8 +104,20 @@ app.put('/contact/update/:id',check('noHP','Nomor Hp tidak valid!').isMobilePhon
         console.log(errors.array())
         return res.render('update',{title: 'Halaman Update',errors: errors.array(),data: req.body})
     }
-    // await update(db,req.params.id,req.body)
-    await Contact.updateOne({_id: new ObjectId(req.params.id)},req.body)
+    if(!req.file){
+        await Contact.updateOne({_id: new ObjectId(req.params.id)},req.body)
+    }else{
+        const contact = {
+            nama: req.body.nama,
+            noHP: req.body.noHP,
+            email: req.body.email,
+            img: {
+                data: fs.readFileSync(path.join(__dirname + '/uploads/' + req.file.filename))
+            }
+        }
+        // await update(db,req.params.id,req.body)
+        await Contact.updateOne({_id: new ObjectId(req.params.id)},contact)
+    }
     req.flash('msg','Data contact berhasil diubah!')
     res.redirect('/contact')
 })
