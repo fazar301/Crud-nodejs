@@ -61,7 +61,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.get('/contact',async (req,res) =>{
-    const data = await Contact.find()
+    const data = await Contact.find().select('nama noHP')
     // console.log(data[0].img.data.toString('base64'))
     res.render('contact',{title: 'Halaman Contact',data,msg: req.flash('msg')})
 })
